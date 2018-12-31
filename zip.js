@@ -26,7 +26,7 @@ function zip(cb) {
         cb(err);
     });
     archive.pipe(output);
-    archive.glob(`${dir}/**`);
+    archive.glob(`${dir}/**/!(bbug-apps-cli*)`);
     archive.finalize();
 }
 
