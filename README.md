@@ -2,7 +2,7 @@
 
 ## Installation
 
-Requires node 8 or greater. See [Downloading and installing Nodejs and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
+Requires node 10. See [Downloading and installing Nodejs and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
 ```npm install -g @jrni/jrni-cli```
 
