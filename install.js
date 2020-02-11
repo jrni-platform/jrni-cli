@@ -11,11 +11,7 @@ const configureApp = require('./configure-app');
 const createEntry = require('./create-entry');
 const logger = require('./logger');
 
-const readline = require("readline");
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+var inquirer = require('inquirer');
 
 
 async function submitForm(configuration) {
@@ -29,11 +25,15 @@ async function submitForm(configuration) {
 
 
 
-        new Promise((resolve, reject) => {
-            rl.question('Do you want to keep the previous configuration?(Y/N) ', (input) => resolve(input) );
-        }).then( (result) => {
-            var keepPreviousConfig = (result === 'Y' ? 1 : 0);
-            rl.close();
+        inquirer.prompt([
+            {
+                type: 'confirm',
+                message: 'Do you want to keep the previous configuration?',
+                name: 'keepPreviousConfig'
+            }
+        ]).then(answers => {
+            var keepPreviousConfig = (answers.keepPreviousConfig === true ? 1 : 0);
+
             form.append('keep_previous_config', keepPreviousConfig);
 
             const options = {
