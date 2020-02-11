@@ -11,6 +11,9 @@ const configureApp = require('./configure-app');
 const createEntry = require('./create-entry');
 const logger = require('./logger');
 
+var inquirer = require('inquirer');
+
+
 async function submitForm(configuration) {
     return new Promise((resolve, reject) => {
         logger.info('Started install');
@@ -19,31 +22,49 @@ async function submitForm(configuration) {
         const form = new FormData();
         logger.info(`host: ${configuration.host}, companyId: ${configuration.companyId}`);
         form.append('file', readStream);
-        const options = {
-            protocol: configuration.port === 443 ? 'https:' : 'http:',
-            host: configuration.host,
-            port: configuration.port || 443,
-            path: `/api/v1/admin/${configuration.companyId}/apps/${configuration.name}`,
-            method: 'PUT',
-            headers: {
-                'App-Id': configuration.appId,
-                'Auth-Token': configuration.authToken
+
+
+
+        inquirer.prompt([
+            {
+                type: 'confirm',
+                message: 'Do you want to keep the previous configuration?',
+                name: 'keepPreviousConfig'
             }
-        }
-        form.submit(options, (error, response) => {
-            if (error) reject(error);
-            const statusCode = response.statusCode;
-            let data = '';
-            response.on('data', (chunk) => {
-                data += chunk;
-            });
-            response.on('end', () => {
-                if (statusCode >= 200 && statusCode <= 300) {
-                    logger.info('Completed install');
-                    resolve();
-                } else {
-                    reject(data);
+        ]).then(answers => {
+            var keepPreviousConfig = (answers.keepPreviousConfig === true ? 1 : 0);
+
+            form.append('keep_previous_config', keepPreviousConfig);
+
+            const options = {
+                protocol: configuration.port === 443 ? 'https:' : 'http:',
+                host: configuration.host,
+                port: configuration.port || 443,
+                path: `/api/v1/admin/${configuration.companyId}/apps/${configuration.name}`,
+                method: 'PUT',
+                headers: {
+                    'App-Id': configuration.appId,
+                    'Auth-Token': configuration.authToken
                 }
+            }
+
+            form.submit(options, (error, response) => {
+                if (error) reject(error);
+                const statusCode = response.statusCode;
+                let data = '';
+
+                response.on('data', (chunk) => {
+                    data += chunk;
+                });
+
+                response.on('end', () => {
+                    if (statusCode >= 200 && statusCode <= 300) {
+                        logger.info('Completed install');
+                        resolve(keepPreviousConfig);
+                    } else {
+                        reject(data);
+                    }
+                });
             });
         });
     });
@@ -59,10 +80,17 @@ async function packageAndInstall(argv) {
         await createEntry(configuration);
         await bundle(configuration);
         await zip();
-        await submitForm(configuration);
-        if (configuration.appConfig) {
-            await configureApp(configuration);
-        }
+
+        var formPromise = submitForm(configuration);
+
+        formPromise.then(async (keepPreviousConfig) => {
+            if (configuration.appConfig && keepPreviousConfig === 0) {
+               await configureApp(configuration);
+            }
+        });
+
+        await Promise.resolve(formPromise);
+
     } catch(error) {
         if (error.response && error.response.data) {
             logger.fatal(error.response.data.error || error.response.data);
