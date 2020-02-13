@@ -16,6 +16,12 @@ options.
 The options will be stored in the project directory in ```.bbugrc```. This avoids the need to
 re-enter options upon re-triggering commands for a given app project.
 
+## Versions of the cli vs server versions
+
+In version version5.17+ a new parameter was added to the api upon install of an extensibility application. It optionally allows you to keep the configuration of the application. This feature was added to v5.17+ of the JRNI BE engine and v0.1.2 of the cli.
+
+In short if the version of the engine is below 5.17 use v0.1.0 of the cli. If above 5.17 use v0.1.2+.
+
 ## Commands
 
 ### Install
