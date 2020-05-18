@@ -1,6 +1,6 @@
 {
   "name": "@jrni/jrni-cli",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "JRNI Apps CLI",
   "main": "index.js",
   "bin": "./index.js",
