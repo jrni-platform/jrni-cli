@@ -1,4 +1,5 @@
 const axios = require('axios');
+const httpsProxyAgent = require('https-proxy-agent');
 
 const logger = require('./logger');
 
@@ -8,7 +9,8 @@ async function configureApp(configuration) {
     logger.info(`Config: '${data}'`);
     const protocol = configuration.port === 443 ? 'https' : 'http';
     const URL = `/api/v1/admin/${configuration.companyId}/apps/${configuration.name}/configure`;
-    await axios({
+
+    var options = {
         method: 'post',
         url: URL,
         baseURL: `${protocol}://${configuration.host}:${configuration.port}`,
@@ -20,7 +22,17 @@ async function configureApp(configuration) {
             'Content-Length': data.length
         },
         responseType: 'json'
-    });
+    }
+
+    var useProxy = configuration.proxyHost && configuration.proxyPort ? true : false;
+    if (useProxy)
+    {
+        logger.info(`Using Proxy ${configuration.proxyHost}:${configuration.proxyPort}`);
+        var agent = new httpsProxyAgent(`http://${configuration.proxyUsername}:${configuration.proxyPassword}@${configuration.proxyHost}:${configuration.proxyPort}`);
+        options.httpsAgent = agent;
+    }
+
+    await axios(options);
     logger.info('Completed config');
 }
 

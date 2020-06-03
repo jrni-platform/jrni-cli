@@ -24,5 +24,21 @@
         "type": "num",
         "default": 443
 
+    },
+    "proxyPort": {
+        "describe": "HTTP port for the Proxy",
+        "type": "num"        
+    },
+    "proxyHost": {
+        "describe": "Host of Proxy",
+        "type": "string"
+    },
+    "proxyPassword": {
+        "describe": "Proxy Password",
+        "type": "string"
+    },
+    "proxyUsername": {
+        "describe": "Proxy username",
+        "type": "string"
     }
 }
