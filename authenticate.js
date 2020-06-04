@@ -5,6 +5,7 @@ const fs = require('fs');
 const util = require('util');
 const writeFile = util.promisify(fs.writeFile);
 const axios = require('axios');
+const httpsProxyAgent = require('https-proxy-agent');
 
 const logger = require('./logger');
 
@@ -29,19 +30,30 @@ async function authenticate(configuration) {
     });
     const protocol = configuration.port === 443 ? 'https' : 'http';
     const URL = configuration.companyId ? `/api/v1/login/admin/${configuration.companyId}` : '/api/v1/login/admin'
+
+    var options = {
+        method: 'post',
+        url: URL,
+        baseURL: `${protocol}://${configuration.host}:${configuration.port}`,
+        data: data,
+        headers: {
+            'App-Id': configuration.appId,
+            'Content-Type': 'application/json',
+            'Content-Length': data.length
+        },
+        responseType: 'json'
+    };
+
+    var useProxy = configuration.proxyHost && configuration.proxyPort ? true : false;
+    if (useProxy)
+    {
+        logger.info(`Using Proxy ${configuration.proxyHost}:${configuration.proxyPort}`);
+        var agent = new httpsProxyAgent(`http://${configuration.proxyUsername}:${configuration.proxyPassword}@${configuration.proxyHost}:${configuration.proxyPort}`);
+        options.httpsAgent = agent;
+    }
+
     try {
-        const response = await axios({
-            method: 'post',
-            url: URL,
-            baseURL: `${protocol}://${configuration.host}:${configuration.port}`,
-            data: data,
-            headers: {
-                'App-Id': configuration.appId,
-                'Content-Type': 'application/json',
-                'Content-Length': data.length
-            },
-            responseType: 'json'
-        });
+        const response = await axios(options);
         const json = response.data;
         configuration.authToken = json.auth_token;
         configuration.companyId = json.company_id;

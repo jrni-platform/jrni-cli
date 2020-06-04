@@ -23,8 +23,6 @@ async function submitForm(configuration) {
         logger.info(`host: ${configuration.host}, companyId: ${configuration.companyId}`);
         form.append('file', readStream);
 
-
-
         inquirer.prompt([
             {
                 type: 'confirm',
@@ -36,15 +34,28 @@ async function submitForm(configuration) {
 
             form.append('keep_previous_config', keepPreviousConfig);
 
+            var useProxy = configuration.proxyHost && configuration.proxyPort ? true : false;
+
+            if (useProxy)
+            {
+                logger.info(`Using Proxy ${configuration.proxyHost}:${configuration.proxyPort}`);
+            }
+
+            var path = `/api/v1/admin/${configuration.companyId}/apps/${configuration.name}`;
+
+            let buff = new Buffer(`${configuration.proxyUsername}:${configuration.proxyPassword}`);
+            let usernamePassBase64 = useProxy ? buff.toString('base64') : ''; 
+
             const options = {
-                protocol: configuration.port === 443 ? 'https:' : 'http:',
-                host: configuration.host,
-                port: configuration.port || 443,
-                path: `/api/v1/admin/${configuration.companyId}/apps/${configuration.name}`,
+                protocol: useProxy ? 'http:' : (configuration.port === 443 ? 'https:' : 'http:'),
+                host: useProxy ? configuration.proxyHost : configuration.host,
+                port: useProxy ? configuration.proxyPort : (configuration.port || 443),
+                path: useProxy ? 'https://' + configuration.host + path : path,
                 method: 'PUT',
                 headers: {
                     'App-Id': configuration.appId,
-                    'Auth-Token': configuration.authToken
+                    'Auth-Token': configuration.authToken,
+                    'Proxy-Authorization' : 'Basic ' + usernamePassBase64
                 }
             }
 

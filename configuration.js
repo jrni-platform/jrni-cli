@@ -36,6 +36,12 @@ class Configuration {
         this.port = argv.port;
         this.dev = argv.dev;
         this.name = this.manifest.unique_name;
+        
+        this.proxyHost = argv.proxyHost;
+        this.proxyPort = argv.proxyPort;
+        this.proxyUsername = argv.proxyUsername;
+        this.proxyPassword = argv.proxyPassword;
+
         this.appId = '302e48d75f4b55016aaf2c81f5ddf80f039e3f863277';
         this.configSchema = fs.readJsonSync(path.join(process.cwd(), 'config.json'), { throws: false });
     }

@@ -37,6 +37,7 @@
     "file-loader": "~2.0.0",
     "form-data": "^2.3.3",
     "fs-extra": "^7.0.1",
+    "https-proxy-agent": "^5.0.0",
     "import-glob-loader": "~1.1.0",
     "inject-sass-imports-loader": "~1.0.5",
     "inquirer": "^6.2.1",
