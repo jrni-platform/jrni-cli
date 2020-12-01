@@ -6,10 +6,16 @@ const archive = archiver('zip');
 
 const logger = require('./logger');
 
-async function zip() {
+async function zip(local = false) {
     return new Promise((resolve, reject) => {
+        let filepath = os.tmpdir();
+        if (local){
+            filepath = "release"
+            if (!fs.existsSync("./release"))
+                fs.mkdirSync("./release")
+        }
         logger.info('Started zip');
-        const output = fs.createWriteStream(path.join(os.tmpdir(), 'app.zip'));
+        const output = fs.createWriteStream(path.join(filepath, 'app.zip'));
         output.on('close', function () {
             logger.info(archive.pointer() + ' total bytes');
             logger.info('Completed zip');
@@ -27,7 +33,7 @@ async function zip() {
         });
         archive.pipe(output);
         archive.glob('./manifest.json');
-        archive.glob('./**/!(bbug-apps-cli*|manifest.json)');
+        archive.glob('./**/!(bbug-apps-cli*|manifest.json|app.zip)');
         archive.glob('./*/manifest.json');
         archive.finalize();
     });

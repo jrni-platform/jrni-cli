@@ -8,13 +8,21 @@ const authenticate = require('./authenticate');
 const logger = require('./logger');
 
 let shutdown = false;
+const chalk = require('chalk');
 
 const delay = ms => new Promise(r => setTimeout(r, ms));
 
 async function getLogs(configuration, start_time = 0) {
     const protocol = configuration.port === 443 ? 'https' : 'http';
-    const end_time = new Date().getTime();
-    const URL = `/api/v1/admin/${configuration.companyId}/apps/${configuration.name}/logs?start_time=${start_time}&end_time=${end_time}`;
+    let end_time = start_time; //new Date().getTime();
+
+    let URL;
+
+    if (start_time > 0 )
+        URL = `/api/v1/admin/${configuration.companyId}/apps/${configuration.name}/logs?start_time=${start_time}`;
+    else
+        URL = `/api/v1/admin/${configuration.companyId}/apps/${configuration.name}/logs`;
+
     try {
         const response = await axios({
             method: 'get',
@@ -27,15 +35,35 @@ async function getLogs(configuration, start_time = 0) {
             responseType: 'json'
         });
         const json = response.data;
-        json.forEach((logs) => {
-            joinedLines = logs.reduce((joined, line) => joined + line.message, '');
-            if (joinedLines != '') console.log(joinedLines);
-        });
+
+        if (Array.isArray(json)){
+            json.forEach((logs) => {
+                joinedLines = logs.reduce((joined, line) => joined + line.message, '');
+                if (joinedLines != '') console.log(joinedLines);
+            });
+        } else {
+            Object.keys(json).forEach((id) => {
+                run = json[id]
+
+                if (run.messages){
+                    run.messages.forEach( (message) => {
+                        if (message[1] == 'INFO')
+                          console.log(chalk.green(`${message[0]}: ${message[2]}`));
+                        if (message[1] == 'WARN')
+                          console.log(chalk.yellow(`${message[0]}: ${message[2]}`));
+                        if (message[1] == 'ERROR')
+                          console.log(chalk.red(`${message[0]}:${message[2]}`));
+                    });
+                    if (run.end_timestamp && run.end_timestamp > end_time)
+                        end_time = run.end_timestamp
+                }
+            })
+        }
         await delay(2000);
         if (shutdown) {
             process.exit(0);
         } else {
-            await getLogs(configuration, end_time);
+            await getLogs(configuration, end_time + 1);
         }
     } catch(error) {
         if (error.response) {
@@ -60,8 +88,12 @@ module.exports = async function(argv) {
         process.on('SIGINT', handleSignal);
         process.on('SIGTERM', handleSignal);
         logger.info('Tailing logs');
-        console.log('');
-        await getLogs(configuration);
+
+        console.log(argv);
+        let start = 0;
+    //    start = new Date().getTime() - 1000000;
+        console.log(start)
+        await getLogs(configuration, start);
     } catch(error) {
         logger.fatal(error);
     }

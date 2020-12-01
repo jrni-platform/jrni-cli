@@ -5,6 +5,8 @@ const initialize = require('./initialize');
 const tail = require('./tail');
 const logger = require('./logger');
 const uninstall = require('./uninstall');
+const build = require('./build');
+const release = require('./release');
 
 const newOptions = require('./new-options.json');
 const defaultOptions = require('./default-options.json');
@@ -38,6 +40,8 @@ yargs
     .command(['$0', 'install'], 'Package and install app', defaultOptions, install)
     .command('new <dir>', 'Initialize a new app', newBuilder, initialize)
     .command('tail', 'Show script logs', tailBuilder, tail)
+    .command('build', 'Build the app to zip', defaultOptions, build)
+    .command('release', 'Build the app and Deploy to a new release', defaultOptions, release)
     .command('uninstall', 'Uninstall a app', defaultOptions, uninstall)
     .config(config)
     .argv;

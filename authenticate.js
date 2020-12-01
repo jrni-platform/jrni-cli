@@ -13,7 +13,7 @@ async function promptForCompany(companies, configuration, cb) {
     const questions = [{
         type: 'list',
         name: 'companyId',
-        message: 'Which company?',
+        message: 'Which company do you wish to install to ?',
         paginated: true,
         choices: companies
     }];
@@ -57,7 +57,8 @@ async function authenticate(configuration) {
         const json = response.data;
         configuration.authToken = json.auth_token;
         configuration.companyId = json.company_id;
-        await configuration.writeToFile();
+        if (configuration.writeToFile)  
+          await configuration.writeToFile();
         logger.info('Completed authorization');
         return configuration;
     } catch(error) {
