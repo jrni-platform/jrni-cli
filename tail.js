@@ -89,10 +89,7 @@ module.exports = async function(argv) {
         process.on('SIGTERM', handleSignal);
         logger.info('Tailing logs');
 
-        console.log(argv);
         let start = 0;
-    //    start = new Date().getTime() - 1000000;
-        console.log(start)
         await getLogs(configuration, start);
     } catch(error) {
         logger.fatal(error);

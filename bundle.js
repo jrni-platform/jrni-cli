@@ -8,7 +8,7 @@ const { VueLoaderPlugin } = require('vue-loader');
 async function bundle(configuration) {
     const projectRootPath = configuration.rootPath;
 
-    // find out which paths are for angular apps and make sure we arse the HTML files for those ones seperatly
+    // find out which paths are for angular apps and make sure we parse the HTML files for those ones seperatly
    let angularPaths = []
 
    if (configuration.manifest.panels){

@@ -100,3 +100,14 @@ Options:
     <td>--port</td><td>HTTP port to use</td>
 </table>
 
+
+### Release
+
+Release a new version of the application to the central app repo. This feature is only available if you have an account as a central app deployer to install apps into the central app listing repo
+
+```jrni-cli release```
+
+This relies on setting two env variables which is your central app repo account login (not the login to a specific client box):
+
+APP_INSTALL_EMAIL: App install email address
+APP_INSTALL_PASSWORD: App install password
