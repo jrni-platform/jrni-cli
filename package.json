@@ -46,7 +46,7 @@
     "mini-css-extract-plugin": "~0.4.4",
     "ng-annotate-loader": "~0.6.1",
     "ng-cache-loader": "~0.0.26",
-    "node-sass": "~4.14.0",
+    "node-sass": "~7.0.0",
     "path": "~0.12.7",
     "resolve-url-loader": "~3.0.0",
     "sass-loader": "~7.1.0",
