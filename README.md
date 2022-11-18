@@ -8,6 +8,16 @@ Requires node 14. See [Downloading and installing Nodejs and npm](https://docs.n
 
 If you see permission errors when trying to install see [Resolving EACCES permissions errors when installing packages globally](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally)
 
+Note: If you run into errors stating "Cannot find module 'vue-template-compiler'" then run the following commands to install:
+
+```text
+git clone git@github.com:jrni-platform/jrni-cli.git
+cd jrni-cli
+npm uninstall -g @jrni/jrni-cli
+npm install
+npm install -g . --no-optional
+```
+
 ## Options
 
 Options may be passed with flags, however you will be prompted to enter any missing required
@@ -99,7 +109,6 @@ Options:
   <tr>
     <td>--port</td><td>HTTP port to use</td>
 </table>
-
 
 ### Release
 
