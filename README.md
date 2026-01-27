@@ -3,7 +3,7 @@
 ## Installation
 
 Requires node 14. See [Downloading and installing Nodejs and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
-
+Our version of `node-sass` requires python2 which doesn't come packaged with brew. Manual download and install here: https://www.python.org/downloads/release/python-2718/
 ```npm install -g @jrni/jrni-cli```
 
 If you see permission errors when trying to install see [Resolving EACCES permissions errors when installing packages globally](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally)
