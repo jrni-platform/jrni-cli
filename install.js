@@ -53,6 +53,7 @@ async function submitForm(configuration) {
                 path: useProxy ? 'https://' + configuration.host + path : path,
                 method: 'PUT',
                 headers: {
+                    'User-Agent': `jrni-cli/${require('./package.json').version}`,
                     'App-Id': configuration.appId,
                     'Auth-Token': configuration.authToken,
                     'Proxy-Authorization' : 'Basic ' + usernamePassBase64
